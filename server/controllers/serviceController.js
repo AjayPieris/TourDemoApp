@@ -9,10 +9,11 @@ exports.addService = async (req, res) => {
         await service.save();
         res.status(201).json(service);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        console.error("Backend error:", err); // <-- log full error
+        res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
+
 
 // Get all services (Tourist)
 exports.getServices = async (req, res) => {

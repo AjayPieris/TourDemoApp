@@ -19,23 +19,42 @@ const ServiceList = ({ user }) => {
   }, []);
 
   return (
-    <div>
-      <h2>Available Services</h2>
-      {services.map((srv) => (
-        <div key={srv._id} style={{ border: '1px solid gray', padding: '10px', margin: '10px' }}>
-          <h3>{srv.title}</h3>
-          <p>{srv.description}</p>
-          <p><b>Category:</b> {srv.category}</p>
-          <p><b>Price:</b> ${srv.price}</p>
-          <p><b>Location:</b> {srv.location}</p>
-          <p><b>Guide:</b> {srv.guide?.name}</p>
-          {user.role === 'tourist' && (
-            <button onClick={() => setSelectedService(srv)}>Book</button>
-          )}
-        </div>
-      ))}
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Available Services</h2>
+      {selectedService && (
+        <Booking
+          user={user}
+          service={selectedService}
+          onClose={() => setSelectedService(null)}
+        />
+      )}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {services.map((srv) => (
+          <div
+            key={srv._id}
+            className="border rounded-lg shadow-sm p-4 bg-white hover:shadow-lg transition-shadow"
+          >
+            <h3 className="text-xl font-semibold mb-2">{srv.title}</h3>
+            <p className="text-gray-700 mb-2">{srv.description}</p>
+            <p className="mb-1"><span className="font-semibold">Category:</span> {srv.category}</p>
+            <p className="mb-1"><span className="font-semibold">Price:</span> ${srv.price}</p>
+            <p className="mb-1"><span className="font-semibold">Location:</span> {srv.location}</p>
+            <p className="mb-3"><span className="font-semibold">Guide:</span> {srv.guide?.name}</p>
 
-      {selectedService && <Booking user={user} service={selectedService} onClose={() => setSelectedService(null)} />}
+            {user?.role === 'tourist' && (
+              <button
+                onClick={() => setSelectedService(srv)}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+              >
+                Book
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
+
     </div>
   );
 };
