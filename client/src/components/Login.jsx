@@ -1,45 +1,33 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { login } from '../services/api';
 
 const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      localStorage.setItem("token", data.token);
-      onLogin(data);
-    } else {
-      alert(data.message);
-    }
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await login({ email, password });
+            console.log(res.data);
+            onLogin(res.data.user); // save user in parent/App state
+        } catch (err) {
+            console.error(err);
+            alert(err.response.data.message);
+        }
+    };
 
-  return (
-    <form onSubmit={handleLogin} className="p-4 flex flex-col gap-2 max-w-sm mx-auto">
-      <h2>Login</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <button type="submit">Login</button>
-    </form>
-  );
+    return (
+        <div>
+            <h2>Login</h2>
+            <form onSubmit={handleSubmit}>
+                <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+                <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    );
 };
 
 export default Login;
+

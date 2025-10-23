@@ -1,31 +1,29 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-import connectDB from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js";
-import serviceRoutes from "./routes/serviceRoutes.js";
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const authRoutes = require('./routes/auth');
+const serviceRoutes = require('./routes/service');
+const bookingRoutes = require('./routes/booking');
 
 const app = express();
 
 // Middleware
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/services", serviceRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/bookings', bookingRoutes);
 
-// Default route
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
+// Connect to MongoDB
+mongoose.connect('mongodb://127.0.0.1:27017/tourismApp', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error(err));
 
-// Connect to MongoDB and start server
+// Start server
 const PORT = process.env.PORT || 5000;
-
-connectDB().then(() => {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -1,10 +1,11 @@
-import express from "express";
-import { addService, getServices } from "../controllers/serviceController.js";
-import { protect } from "../middleware/authMiddleware.js";
-
+const express = require('express');
 const router = express.Router();
+const { addService, getServices } = require('../controllers/serviceController');
 
-router.post("/", protect, addService);
-router.get("/", getServices);
+// Guide adds service
+router.post('/add', addService);
 
-export default router;
+// Tourist gets all services
+router.get('/', getServices);
+
+module.exports = router;

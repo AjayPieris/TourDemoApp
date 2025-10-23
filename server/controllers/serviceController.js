@@ -1,25 +1,26 @@
-import Service from "../models/service";
+const Service = require('../models/Service');
 
-export const addService = async (req, res) => {
-  const { title, description, price, location, category } = req.body;
+// Add new service (Guide)
+exports.addService = async (req, res) => {
+    const { title, description, category, price, location, guide } = req.body;
 
-  if (!title || !price || !location || !category) {
-    return res.status(400).json({ message: "Please fill all required fields" });
-  }
-
-  const service = await Service.create({
-    guide: req.user._id,
-    title,
-    description,
-    price,
-    location,
-    category,
-  });
-
-  res.status(201).json(service);
+    try {
+        const service = new Service({ title, description, category, price, location, guide });
+        await service.save();
+        res.status(201).json(service);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
 };
 
-export const getServices = async (req, res) => {
-  const services = await Service.find().populate("guide", "name email");
-  res.json(services);
+// Get all services (Tourist)
+exports.getServices = async (req, res) => {
+    try {
+        const services = await Service.find().populate('guide', 'name email');
+        res.status(200).json(services);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
 };

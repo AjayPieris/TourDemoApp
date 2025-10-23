@@ -1,30 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { getServices } from '../services/api';
+import Booking from './Booking';
 
-const ServiceList = () => {
+const ServiceList = ({ user }) => {
   const [services, setServices] = useState([]);
+  const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
     const fetchServices = async () => {
-      const res = await fetch("http://localhost:5000/api/services");
-      const data = await res.json();
-      setServices(data);
+      try {
+        const res = await getServices();
+        setServices(res.data);
+      } catch (err) {
+        console.error(err);
+      }
     };
     fetchServices();
   }, []);
 
   return (
-    <div className="p-4 max-w-2xl mx-auto">
-      <h2 className="text-xl font-bold mb-4">Services</h2>
-      {services.map((s) => (
-        <div key={s._id} className="border p-2 mb-2 rounded">
-          <h3>{s.title}</h3>
-          <p>{s.description}</p>
-          <p>Price: ${s.price}</p>
-          <p>Category: {s.category}</p>
-          <p>Location: {s.location}</p>
-          <p>Guide: {s.guide.name}</p>
+    <div>
+      <h2>Available Services</h2>
+      {services.map((srv) => (
+        <div key={srv._id} style={{ border: '1px solid gray', padding: '10px', margin: '10px' }}>
+          <h3>{srv.title}</h3>
+          <p>{srv.description}</p>
+          <p><b>Category:</b> {srv.category}</p>
+          <p><b>Price:</b> ${srv.price}</p>
+          <p><b>Location:</b> {srv.location}</p>
+          <p><b>Guide:</b> {srv.guide?.name}</p>
+          {user.role === 'tourist' && (
+            <button onClick={() => setSelectedService(srv)}>Book</button>
+          )}
         </div>
       ))}
+
+      {selectedService && <Booking user={user} service={selectedService} onClose={() => setSelectedService(null)} />}
     </div>
   );
 };
