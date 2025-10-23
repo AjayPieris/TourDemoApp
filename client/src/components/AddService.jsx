@@ -8,22 +8,45 @@ const AddService = ({ user }) => {
   const [price, setPrice] = useState('');
   const [location, setLocation] = useState('');
 
+  const validCategories = ["tour", "van", "tool"];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Ensure user exists and is a guide
+    if (!user || !user._id || user.role !== 'guide') {
+      alert("Only logged-in guides can add services");
+      return;
+    }
+
+    if (!validCategories.includes(category)) {
+      alert("Invalid category selected");
+      return;
+    }
+
+    const serviceData = {
+      guide: user._id,
+      title,
+      description,
+      category,
+      price: Number(price),
+      location,
+    };
+
     try {
-      const res = await addService({
-        guide: user._id,
-        title,
-        description,
-        category,
-        price,
-        location,
-      });
-      alert('Service added successfully!');
+      const res = await addService(serviceData);
+      alert("Service added successfully!");
       console.log(res.data);
+
+      // Clear form
+      setTitle('');
+      setDescription('');
+      setCategory('tour');
+      setPrice('');
+      setLocation('');
     } catch (err) {
-      console.error(err);
-      alert('Error adding service.');
+      console.error("Error adding service:", err.response?.data || err.message);
+      alert("Error adding service.");
     }
   };
 
@@ -43,7 +66,11 @@ const AddService = ({ user }) => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         ></textarea>
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          required
+        >
           <option value="tour">Tour</option>
           <option value="van">Van</option>
           <option value="tool">Tool</option>

@@ -1,4 +1,4 @@
-const Service = require('../models/Service');
+const Service = require('../models/service');
 
 // Add new service (Guide)
 exports.addService = async (req, res) => {
