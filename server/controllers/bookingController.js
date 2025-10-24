@@ -31,3 +31,27 @@ exports.getBookings = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+
+// Update booking status
+exports.updateBookingStatus = async (req, res) => {
+  const { bookingId } = req.params;
+  const { status } = req.body; // 'confirmed' or 'rejected'
+
+  try {
+    const booking = await Booking.findByIdAndUpdate(
+      bookingId,
+      { status },
+      { new: true }
+    ).populate('tourist service', 'name email title');
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    res.status(200).json({ message: 'Booking status updated', booking });
+  } catch (err) {
+    console.error('Error updating booking:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

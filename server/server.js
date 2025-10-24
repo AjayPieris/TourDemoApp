@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const serviceRoutes = require('./routes/service');
 const bookingRoutes = require('./routes/booking');
 
+
 const app = express();
 
 // Middleware

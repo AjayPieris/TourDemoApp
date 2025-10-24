@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
-import Login from './components/Login';
-import Signup from './components/Signup';
-import AddService from './components/AddService';
-import ServiceList from './components/ServiceList';
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import AddService from "./components/AddService";
+import ServiceList from "./components/ServiceList";
+import Bookings from "./page/Bookings";
+import GuideBookings from "./page/GuideBookings";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -11,7 +13,7 @@ function App() {
 
   // Keep user logged in after refresh
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -19,20 +21,20 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-    navigate('/');
+    localStorage.setItem("user", JSON.stringify(userData));
+    navigate("/");
   };
 
   const handleSignup = (userData) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-    navigate('/');
+    localStorage.setItem("user", JSON.stringify(userData));
+    navigate("/");
   };
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem('user');
-    navigate('/login');
+    localStorage.removeItem("user");
+    navigate("/login");
   };
 
   return (
@@ -41,7 +43,10 @@ function App() {
       <nav className="p-4 bg-white shadow-md flex justify-between items-center">
         {/* Left side */}
         <div>
-          <Link to="/" className="font-bold text-xl text-blue-600 hover:underline">
+          <Link
+            to="/"
+            className="font-bold text-xl text-blue-600 hover:underline"
+          >
             Home
           </Link>
         </div>
@@ -50,19 +55,42 @@ function App() {
         <div>
           {!user && (
             <>
-              <Link to="/login" className="mr-4 text-gray-700 hover:text-blue-600 hover:underline">
+              <Link
+                to="/login"
+                className="mr-4 text-gray-700 hover:text-blue-600 hover:underline"
+              >
                 Login
               </Link>
-              <Link to="/signup" className="text-gray-700 hover:text-blue-600 hover:underline">
+              <Link
+                to="/signup"
+                className="text-gray-700 hover:text-blue-600 hover:underline"
+              >
                 Signup
               </Link>
             </>
           )}
-          {user && user.role === 'guide' && (
-            <Link to="/add-service" className="mr-4 text-gray-700 hover:text-blue-600 hover:underline">
+          {user && user.role === "guide" && (
+            <Link
+              to="/add-service"
+              className="mr-4 text-gray-700 hover:text-blue-600 hover:underline"
+            >
               Add Service
             </Link>
           )}
+          {user && user.role === "guide" && (
+            <Link
+              to="/show-booking"
+              className="ml-5 bg-green-500 text-white px-3 py-1.5 rounded hover:bg-green-600 mr-5"
+            >
+              Show Booking
+            </Link>
+          )}
+         {user && user.role === "tourist" && (<button
+            onClick={() => navigate("/my-bookings")}
+            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 mr-5"
+          >
+            My Booking
+          </button>)}
           {user && (
             <button
               onClick={handleLogout}
@@ -92,6 +120,8 @@ function App() {
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/signup" element={<Signup onSignup={handleSignup} />} />
           <Route path="/add-service" element={<AddService user={user} />} />
+          <Route path="/my-bookings" element={<Bookings user={user} />} />
+          <Route path="/show-booking" element={<GuideBookings user={user} />} />
         </Routes>
       </main>
     </div>
