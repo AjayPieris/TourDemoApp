@@ -7,6 +7,11 @@ import ServiceList from "./components/ServiceList";
 import Bookings from "./page/Bookings";
 import GuideBookings from "./page/GuideBookings";
 
+// NEW: notifications
+import { NotificationsProvider } from "./context/NotificationsContext";
+import NotificationBell from "./components/NotificationsBell";
+import NotificationsTester from "./components/NotificationsTester";
+
 function App() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -38,93 +43,111 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation Bar */}
-      <nav className="p-4 bg-white shadow-md flex justify-between items-center">
-        {/* Left side */}
-        <div>
-          <Link
-            to="/"
-            className="font-bold text-xl text-blue-600 hover:underline"
-          >
-            Home
-          </Link>
-        </div>
-
-        {/* Right side */}
-        <div>
-          {!user && (
-            <>
-              <Link
-                to="/login"
-                className="mr-4 text-gray-700 hover:text-blue-600 hover:underline"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="text-gray-700 hover:text-blue-600 hover:underline"
-              >
-                Signup
-              </Link>
-            </>
-          )}
-          {user && user.role === "guide" && (
+    <NotificationsProvider>
+      <div className="min-h-screen bg-gray-50">
+        {/* Navigation Bar */}
+        <nav className="p-4 bg-white shadow-md flex justify-between items-center">
+          {/* Left side */}
+          <div>
             <Link
-              to="/add-service"
-              className="mr-4 text-gray-700 hover:text-blue-600 hover:underline"
+              to="/"
+              className="font-bold text-xl text-blue-600 hover:underline"
             >
-              Add Service
+              Home
             </Link>
-          )}
-          {user && user.role === "guide" && (
-            <Link
-              to="/show-booking"
-              className="ml-5 bg-green-500 text-white px-3 py-1.5 rounded hover:bg-green-600 mr-5"
-            >
-              Show Booking
-            </Link>
-          )}
-         {user && user.role === "tourist" && (<button
-            onClick={() => navigate("/my-bookings")}
-            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 mr-5"
-          >
-            My Booking
-          </button>)}
-          {user && (
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-            >
-              Logout
-            </button>
-          )}
-        </div>
-      </nav>
+          </div>
 
-      {/* Page Routing */}
-      <main className="p-6">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              user ? (
-                <ServiceList user={user} />
-              ) : (
-                <p className="text-center text-gray-700 text-lg mt-10">
-                  Please login to view services.
-                </p>
-              )
-            }
-          />
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/signup" element={<Signup onSignup={handleSignup} />} />
-          <Route path="/add-service" element={<AddService user={user} />} />
-          <Route path="/my-bookings" element={<Bookings user={user} />} />
-          <Route path="/show-booking" element={<GuideBookings user={user} />} />
-        </Routes>
-      </main>
-    </div>
+          {/* Right side */}
+          <div className="flex items-center">
+            {!user && (
+              <>
+                <Link
+                  to="/login"
+                  className="mr-4 text-gray-700 hover:text-blue-600 hover:underline"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="text-gray-700 hover:text-blue-600 hover:underline"
+                >
+                  Signup
+                </Link>
+              </>
+            )}
+
+            {user && user.role === "guide" && (
+              <>
+                <Link
+                  to="/add-service"
+                  className="mr-4 text-gray-700 hover:text-blue-600 hover:underline"
+                >
+                  Add Service
+                </Link>
+                <Link
+                  to="/show-booking"
+                  className="ml-5 bg-green-500 text-white px-3 py-1.5 rounded hover:bg-green-600 mr-5"
+                >
+                  Show Booking
+                </Link>
+                {/* Notification bell for guides (optional) */}
+                <div className="mr-4">
+                  <NotificationBell />
+                </div>
+                
+              </>
+            )}
+
+            {user && user.role === "tourist" && (
+              <>
+                <button
+                  onClick={() => navigate("/my-bookings")}
+                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 mr-5"
+                >
+                  My Booking
+                </button>
+                {/* Notification bell for tourists */}
+                <div className="mr-4">
+                  <NotificationBell />
+                </div>
+              </>
+            )}
+
+            {user && (
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+              >
+                Logout
+              </button>
+            )}
+          </div>
+        </nav>
+
+        {/* Page Routing */}
+        <main className="p-6">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                user ? (
+                  <ServiceList user={user} />
+                ) : (
+                  <p className="text-center text-gray-700 text-lg mt-10">
+                    Please login to view services.
+                  </p>
+                )
+              }
+            />
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/signup" element={<Signup onSignup={handleSignup} />} />
+            <Route path="/add-service" element={<AddService user={user} />} />
+            <Route path="/my-bookings" element={<Bookings user={user} />} />
+            <Route path="/show-booking" element={<GuideBookings user={user} />} />
+          </Routes>
+        </main>
+      </div>
+    </NotificationsProvider>
   );
 }
 
