@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:5000");
 
 function Bookings({ user }) {
   const [bookings, setBookings] = useState([]);
@@ -20,6 +23,17 @@ function Bookings({ user }) {
     };
 
     fetchBookings();
+
+    // Listen for any booking updates and patch status in place
+    socket.on("updateBooking", (updatedBooking) => {
+      setBookings((prev) =>
+        prev.map((b) => (b._id === updatedBooking._id ? { ...b, status: updatedBooking.status } : b))
+      );
+    });
+
+    return () => {
+      socket.off("updateBooking");
+    };
   }, [user]);
 
   if (loading) return <p>Loading bookings...</p>;

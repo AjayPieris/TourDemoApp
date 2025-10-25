@@ -25,13 +25,16 @@ function GuideBookings({ user }) {
 
   // Handle booking status update
   const handleStatus = async (_id, status) => {
-  try {
-    const res = await axios.put(`http://localhost:5000/api/bookings/status/${_id}`, { status });
-    alert(res.data.message);
-  } catch (err) {
-    console.error("Failed to update status:", err);
-  }
-};
+    try {
+      const res = await axios.put(`http://localhost:5000/api/bookings/status/${_id}`, { status });
+      // Update local UI immediately
+      setBookings((prev) => prev.map((b) => (b._id === _id ? { ...b, status } : b)));
+      alert(res.data.message);
+    } catch (err) {
+      console.error("Failed to update status:", err);
+      alert("Failed to update booking status.");
+    }
+  };
 
   // useEffect for fetching + socket listeners
   useEffect(() => {
@@ -39,7 +42,7 @@ function GuideBookings({ user }) {
 
     // Listen for new bookings
     socket.on("newBooking", (newBooking) => {
-      if (user?._id && newBooking.guide === user._id) {
+      if (user?._id && String(newBooking.guide) === String(user._id)) {
         setBookings((prev) => [...prev, newBooking]);
       }
     });
@@ -47,7 +50,7 @@ function GuideBookings({ user }) {
     // Listen for updates
     socket.on("updateBooking", (updatedBooking) => {
       setBookings((prev) =>
-        prev.map((b) => (b._id === updatedBooking._id ? updatedBooking : b))
+        prev.map((b) => (b._id === updatedBooking._id ? { ...b, status: updatedBooking.status } : b))
       );
     });
 

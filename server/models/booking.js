@@ -5,7 +5,7 @@ const bookingSchema = new mongoose.Schema({
     tourist: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     guide: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     date: { type: Date, required: true },
-    status: { type: String, enum: ['pending', 'confirmed', 'completed'], default: 'pending' },
+    status: { type: String, enum: ['pending', 'confirmed', 'rejected', 'completed'], default: 'pending' },
     createdAt: { type: Date, default: Date.now }
 });
 
